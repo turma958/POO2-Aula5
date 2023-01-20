@@ -1,9 +1,28 @@
-﻿interface IBaseRepository<T, TKey>
+﻿var repo = new BaseRepository<Aluno, Guid>();
+
+var id = Guid.NewGuid();
+await repo.Add(new Aluno
 {
-    void Add(T objeto);
-    void Remove(TKey id);
-    T? Get(TKey id);
-    IEnumerable<T> List();
+    Id = id,
+    Nome = "Davi"
+});
+
+var getAluno = await repo.Get(id);
+var listAluno = await repo.List();
+
+Console.ReadLine();
+
+class Aluno : BaseModel<Guid>
+{
+    public string Nome { get; set; }
+}
+
+interface IBaseRepository<T, TKey>
+{
+    Task Add(T objeto);
+    Task Remove(TKey id);
+    Task<T?> Get(TKey id);
+    Task<IEnumerable<T>> List();
 }
 
 abstract class BaseModel<TKey>
@@ -15,24 +34,27 @@ class BaseRepository<T, TKey> : IBaseRepository<T, TKey> where T : BaseModel<TKe
 {
     private List<T> list = new List<T>();
 
-    public void Add(T objeto)
+    public async Task Add(T objeto)
     {
+        await Task.Delay(100);
         list.Add(objeto);
     }
 
-    public T? Get(TKey id)
+    public async Task<T?> Get(TKey id)
     {
+        await Task.Delay(100);
         return list.FirstOrDefault(x => x.Id.Equals(id));
     }
 
-    public IEnumerable<T> List()
+    public async Task<IEnumerable<T>> List()
     {
+        await Task.Delay(100);
         return list;
     }
 
-    public void Remove(TKey id)
+    public async Task Remove(TKey id)
     {
-        var objeto = Get(id);
+        var objeto = await Get(id);
 
         if (objeto != null)
             list.Remove(objeto);
